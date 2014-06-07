@@ -1,4 +1,4 @@
-name := "xwp-template"
+name := "scala-cd"
 
 organization := "com.earldouglas"
 
