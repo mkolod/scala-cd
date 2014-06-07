@@ -4,7 +4,7 @@ scala:
 env:
   global:
     secure: YrDuX8eZdGJlr7Te/X3z0TCmebwTbcN14+p2n2dy0cPbStsOzbHVfnN51zMGHf6DvVRSCn41hqTDSZnAy0cQA9DHvnOcMHXdpQiK3oAgfCbtDsAs6QE6evlvbNLzR5JoUpfVW/p0V0VnEwcNKREANDK9OUMI5nOGSeSZ+9WXIV0=
-script: sbt coveralls package linkWar
+script: sbt container:start coveralls container:stop package linkWar
 after_success:
 - if [[ "$TRAVIS_BRANCH" == "master" ]]; then
     wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh ;
