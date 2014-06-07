@@ -13,3 +13,7 @@ libraryDependencies += "org.eclipse.jetty" % "jetty-webapp" % "9.1.0.v20131115" 
 libraryDependencies += "org.eclipse.jetty" % "jetty-plus" % "9.1.0.v20131115" % "container"
 
 libraryDependencies += "javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided"
+
+ScoverageSbtPlugin.instrumentSettings
+
+CoverallsPlugin.coverallsSettings
