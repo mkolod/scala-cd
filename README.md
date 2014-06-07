@@ -45,7 +45,9 @@ This builds on the steps outlined in [continuous integration for scala](https://
       ```yaml
       script: sbt coveralls package linkWar
       after_success:
-      - wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
-      - heroku plugins:install https://github.com/heroku/heroku-deploy
-      - heroku deploy:war --war target/scala-cd.war --app scala-cd
+      - if [[ "$TRAVIS_BRANCH" == "master" ]]; then
+          wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh ;
+          heroku plugins:install https://github.com/heroku/heroku-deploy ;
+          heroku deploy:war --war target/scala-cd.war --app scala-cd ;
+        fi
       ```
