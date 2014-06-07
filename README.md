@@ -9,6 +9,10 @@
 
 1. Create a Heroku app
 1. Fork xwp-template
+  * The steps below assume the project name is changed to `scala-cd` in *build.sbt*:
+        ```scala
+        name := "scala-cd"
+        ```
 1. Follow steps in [scala-ci](https://github.com/earldouglas/scala-ci#continuous-integration-for-scala)
 1. Make an sbt task to create a predictable symlink to the *.war* package
         ```scala
