@@ -8,13 +8,16 @@
 **Outline:**
 
 1. Create a Heroku app
-1. Fork xwp-template
+1. Fork [xwp-template](https://github.com/earldouglas/xwp-template)
   * The steps below assume the project name is changed to `scala-cd` in *build.sbt*:
+
         ```scala
         name := "scala-cd"
         ```
+
 1. Follow steps in [scala-ci](https://github.com/earldouglas/scala-ci#continuous-integration-for-scala)
 1. Make an sbt task to create a predictable symlink to the *.war* package
+
         ```scala
         val linkWar = taskKey[Unit]("Symlink the packaged .war file")
         
@@ -26,17 +29,17 @@
           Files.createSymbolicLink(link.toPath, pkg.toPath)
         }
         ```
+
 1. Add encrypted Heroku api key to the Travis CI configuration:
+
         ```bash
         travis encrypt HEROKU_API_KEY=`heroku auth:token` --add
         ```
+
 1. Configure Travis CI to deploy to Heroku
-  * Change `script`:
+
         ```yaml
         script: sbt coveralls package linkWar
-        ```
-  * Deploy after successfully packaging:
-        ```yaml
         after_success:
         - wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
         - heroku plugins:install https://github.com/heroku/heroku-deploy
