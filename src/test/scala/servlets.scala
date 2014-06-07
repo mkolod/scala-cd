@@ -2,7 +2,39 @@ package scalacd
 
 import org.scalatest._
 
-class ServletTests extends FunSuite {
+import org.eclipse.jetty.server.Server
+import org.eclipse.jetty.server.ServerConnector
+import org.eclipse.jetty.webapp.WebAppContext
+
+class TestServer(war: String, port: Int, context: String) {
+
+  val server = new Server()
+
+  val conn = new ServerConnector(server)
+  conn.setHost("localhost")
+  conn.setPort(port)
+  server.addConnector(conn)
+ 
+  val webapp = new WebAppContext()
+  webapp.setContextPath(context)
+  webapp.setWar(war)
+  server.setHandler(webapp)
+
+  server.start()
+
+  def stop() {
+    server.stop()
+  }
+
+}
+
+class ServletTests extends FunSuite with BeforeAndAfterAll {
+
+  val testServer = new TestServer("src/main/webapp", 8080, "/")
+
+  override def afterAll() {
+    testServer.stop()
+  }
 
   def get(url: String): String = {
 

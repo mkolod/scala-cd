@@ -43,7 +43,7 @@ This builds on the steps outlined in [continuous integration for scala](https://
 1. Configure Travis CI to deploy to Heroku
 
       ```yaml
-      script: sbt container:start coveralls container:stop package linkWar
+      script: sbt coveralls package linkWar
       after_success:
       - if [[ "$TRAVIS_BRANCH" == "master" ]]; then
           wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh ;
