@@ -1,4 +1,11 @@
 language: scala
 scala:
-  - 2.10.3
-script: "sbt coveralls"
+- 2.10.3
+env:
+  global:
+    secure: YrDuX8eZdGJlr7Te/X3z0TCmebwTbcN14+p2n2dy0cPbStsOzbHVfnN51zMGHf6DvVRSCn41hqTDSZnAy0cQA9DHvnOcMHXdpQiK3oAgfCbtDsAs6QE6evlvbNLzR5JoUpfVW/p0V0VnEwcNKREANDK9OUMI5nOGSeSZ+9WXIV0=
+script: sbt coveralls package linkWar
+after_success:
+- wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
+- heroku plugins:install https://github.com/heroku/heroku-deploy
+- heroku deploy:war --war target/scala-cd.war --app scala-cd

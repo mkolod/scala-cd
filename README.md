@@ -1,141 +1,51 @@
-[![Build Status](https://travis-ci.org/earldouglas/xwp-template.svg?branch=master)](https://travis-ci.org/earldouglas/xwp-template)
+[![Build Status](https://travis-ci.org/earldouglas/scala-cd.svg?branch=master)](https://travis-ci.org/earldouglas/scala-cd)
+[![Coverage Status](https://coveralls.io/repos/earldouglas/scala-cd/badge.png)](https://coveralls.io/r/earldouglas/scala-cd)
 
-# Getting started with xsbt-web-plugin
+# Continuous deployment for Scala Web applications
 
-This project shows how to build a basic Scala Web application using sbt and [xsbt-web-plugin](https://github.com/JamesEarlDouglas/xsbt-web-plugin).  To get started, either clone this project or follow the steps below to recreate it.
+*June 7, 2014*
 
-## Starting from scratch
+**Outline:**
 
-Create a new empty project:
+0. Create a Heroku app
 
-```
-mkdir xwp-template
-cd xwp-template
-```
+1. Fork xwp-template
 
-Set up the project structure:
+2. Follow steps in [scala-ci](https://github.com/earldouglas/scala-ci#continuous-integration-for-scala)
 
-```
-mkdir project
-mkdir -p src/main/scala
-mkdir -p src/main/webapp/WEB-INF
-```
-
-Configure sbt:
-
-*project/build.properties*:
-
-```
-sbt.version=0.13.0
-```
-
-*project/plugins.sbt*:
-```
-addSbtPlugin("com.earldouglas" % "xsbt-web-plugin" % "0.5.0")
-```
-
-*build.sbt*:
-```
-name := "xwp-template"
-
-organization := "com.earldouglas"
-
-version := "0.1.0-SNAPSHOT"
-
-scalaVersion := "2.10.3"
-
-seq(webSettings :_*)
-
-libraryDependencies += "org.eclipse.jetty" % "jetty-webapp" % "9.1.0.v20131115" % "container"
-
-libraryDependencies += "org.eclipse.jetty" % "jetty-plus" % "9.1.0.v20131115" % "container"
-
-libraryDependencies += "javax.servlet" % "servlet-api" % "2.5" % "provided"
-```
-
-Add a servlet:
-
-*src/main/scala/XwpTemplateServlet.scala*:
+3. Make an sbt task to create a predictable symlink to the *.war* package
 
 ```scala
-package com.earldouglas.xwptemplate
+val linkWar = taskKey[Unit]("Symlink the packaged .war file")
 
-import scala.xml.NodeSeq
-import javax.servlet.http.HttpServlet
-
-class XwpTemplateServlet extends HttpServlet {
-
-  import javax.servlet.http.HttpServletRequest
-  import javax.servlet.http.HttpServletResponse
-
-  override def doGet(request: HttpServletRequest, response: HttpServletResponse) {
-
-    response.setContentType("text/html")
-    response.setCharacterEncoding("UTF-8")
-
-    val responseBody: NodeSeq = <html><body><h1>Hello, world!</h1></body></html>
-    response.getWriter.write(responseBody.toString)
-  }
+linkWar := {
+  val (art, pkg) = packagedArtifact.in(Compile, packageWar).value
+  import java.nio.file.Files
+  val link = (target.value / (art.name + "." + art.extension))
+  link.delete
+  Files.createSymbolicLink(link.toPath, pkg.toPath)
 }
 ```
 
-*src/main/webapp/WEB-INF/web.xml*:
+4. Add encrypted Heroku api key to the Travis CI configuration:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<web-app
-  xmlns="http://java.sun.com/xml/ns/javaee"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-  version="2.5"
-  >
-
-  <servlet>
-    <servlet-name>xwp template</servlet-name>
-    <servlet-class>com.earldouglas.xwptemplate.XwpTemplateServlet</servlet-class>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>xwp template</servlet-name>
-    <url-pattern>/*</url-pattern>
-  </servlet-mapping>
-
-</web-app>
+```bash
+travis encrypt HEROKU_API_KEY=`heroku auth:token` --add
 ```
 
-## Launching from sbt
+5. Configure Travis CI to deploy to Heroku
 
-From sbt, run the command `container:start`:
+Change `script`:
 
-```
-> container:start
-[info] jetty-9.1.0.v20131115
-[info] NO JSP Support for /, did not find org.apache.jasper.servlet.JspServlet
-[info] Started SelectChannelConnector@0.0.0.0:8080
-[success] Total time: 0 s, completed May 27, 2013 11:29:14 AM
->
+```yaml
+script: sbt coveralls package linkWar
 ```
 
-The Web application is now running at http://localhost:8080/.  Take a look with a Web browser, or via curl:
+Deploy after successfully packaging:
 
+```yaml
+after_success:
+- wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
+- heroku plugins:install https://github.com/heroku/heroku-deploy
+- heroku deploy:war --war target/scala-cd.war --app scala-cd
 ```
-$ curl -i localhost:8080
-HTTP/1.1 200 OK
-Content-Type: text/html; charset=utf-8
-Content-Length: 48
-Server: Jetty(6.1.22)
-
-<html><body><h1>Hello, world!</h1></body></html>
-```
-
-## Deploying to a servlet container
-
-To build a WAR file suitable for deployment, run the command `package` from sbt:
-
-```
-> package
-[success] Total time: 0 s, completed May 27, 2013 11:31:59 AM
-> 
-```
-
-The WAR file can be found in *target/scala-2.10/xwp-template_2.10-0.1.0-SNAPSHOT.war*.
