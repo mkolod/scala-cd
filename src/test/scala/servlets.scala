@@ -47,9 +47,9 @@ class ServletTests extends FunSuite with BeforeAndAfterAll {
     fromInputStream(conn.getInputStream).getLines().mkString("\n")
   }
 
-  test("hello, world") {
+  test("/ title") {
     val res = get("http://localhost:8080/")
-    assert(res === """<html><body><h1>Hello, world!</h1></body></html>""")
+    assert(res.contains("""<title>continuous deployment for scala</title>"""))
   }
 
 }
