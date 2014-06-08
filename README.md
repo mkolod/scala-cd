@@ -54,7 +54,10 @@ linkWar := {
 }
 ```
 
-We need to provide Travis CI with our Heroku deployment credentials, so let's
+This creates a symbolic link *target/scala-cd.war* to the sbt-generated
+artifact *target/scala-2.10/scala-cd_2.10-0.1.0-SNAPSHOT.war*.
+
+Next, we need to provide Travis CI with our Heroku deployment credentials, so let's
 encrypt them and add them to *.travis.yml*.  See the related
 [Travis CI docs](http://docs.travis-ci.com/user/deployment/heroku/)
 for more information.
@@ -63,6 +66,14 @@ Run the following from your project directory:
 
 ```bash
 travis encrypt HEROKU_API_KEY=`heroku auth:token` --add
+```
+
+This adds an encrypted version of your Heroku API Key to *.travis.yml*:
+
+```yaml
+env:
+  global:
+    secure: [a long, ecnrypted string]
 ```
 
 Finally, we configure Travis CI to deploy successful builds of the *master*
