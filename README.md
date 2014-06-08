@@ -84,3 +84,8 @@ after_success:
   heroku deploy:war --war target/scala-cd.war --app scala-cd ;
 fi
 ```
+
+Now when we push changs to GitHub, Travis CI picks them up, and
+[runs a build](https://travis-ci.org/earldouglas/scala-cd/builds) via
+`sbt coveralls package linkWar`.  If the changes were pushed to the master
+branch, Travis CI pushes the packaged *.war* file [to Heroku](http://scala-cd.herokuapp.com/).
