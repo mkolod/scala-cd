@@ -20,7 +20,6 @@ call the app *scala-sd*.
 
 If you don't already have a Scala Web project that you want to use, create a new
 one by forking [xwp-template](https://github.com/earldouglas/xwp-template).
-
 Note that xwp-template has a `name` setting set to `xwp-template`, but we use
 the name `scala-cd` in the steps below:
 
@@ -38,10 +37,8 @@ Follow steps outlined in [continuous integration for scala](https://github.com/e
 
 When sbt packages a Web project, it creates a package file that includes is a
 little hard to predict, since it includes both the project version and the Scala
-version in its file name.
-
-To make things easier, we want a predictable path to the *.war* package, which
-we'll create with a simple sbt task.
+version in its file name.  To make things easier, we want a predictable path to
+the *.war* package, which we'll create with a simple sbt task.
 
 *build.sbt:*
 
