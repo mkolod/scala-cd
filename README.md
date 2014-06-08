@@ -5,7 +5,7 @@
 
 *June 7, 2014*
 
-Here I outline the steps to take to enable continuous deployment for Scala
+Here we outline the steps to take to enable continuous deployment for Scala
 Web projects that are based on [xsbt-web-plugin](https://github.com/earldouglas/xsbt-web-plugin/).
 
 This builds on [continuous integration for scala](https://github.com/earldouglas/scala-ci#continuous-integration-for-scala),
