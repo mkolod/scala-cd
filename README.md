@@ -8,9 +8,8 @@
 Here I outline the steps to take to enable continuous deployment for Scala
 Web projects that are based on [xsbt-web-plugin](https://github.com/earldouglas/xsbt-web-plugin/).
 
-This builds on the steps outlined in 
-[continuous integration for scala](https://github.com/earldouglas/scala-ci#continuous-integration-for-scala),
-adding *.war* file deployment to Heroku.
+This builds on [continuous integration for scala](https://github.com/earldouglas/scala-ci#continuous-integration-for-scala),
+adding automated *.war* file deployment to Heroku.
 
 ## Heroku
 
