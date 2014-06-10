@@ -86,10 +86,10 @@ it with the following.
 script: sbt coveralls package linkWar
 after_success:
 - if [[ "$TRAVIS_BRANCH" == "master" ]]; then
-  wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh ;
-  heroku plugins:install https://github.com/heroku/heroku-deploy ;
-  heroku deploy:war --war target/scala-cd.war --app scala-cd ;
-fi
+    wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh ;
+    heroku plugins:install https://github.com/heroku/heroku-deploy ;
+    heroku deploy:war --war target/scala-cd.war --app scala-cd ;
+  fi
 ```
 
 Now when we push changs to GitHub, Travis CI picks them up, and
