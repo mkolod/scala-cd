@@ -30,6 +30,7 @@ class TestServer(war: String, port: Int, context: String) {
 
 class ServletTests extends FunSuite
                    with BeforeAndAfterAll
+                   with DefaultPageTests
                    with AddServletTests {
 
   val testServer = new TestServer("src/main/webapp", 8080, "/")
@@ -63,6 +64,26 @@ trait AddServletTests { self: ServletTests =>
   test("don't add no numbers") {
     val sum = get("/add")
     assert(sum === "")
+  }
+
+}
+
+trait DefaultPageTests { self: ServletTests =>
+
+  test("see header") {
+    val res = get("/")
+    assert(res.contains("""<h1>scala-cd</h1>"""))
+  }
+
+  test("see link to /add service") {
+    val res = get("/")
+    val xml = scala.xml.XML.loadString(res)
+    val hrefs =
+      for {
+        a    <- xml \\ "a"
+        href <- a attribute "href"
+      } yield href.text
+    assert(hrefs contains "/add?1,2,3,4,5,6,6,7,8")
   }
 
 }
