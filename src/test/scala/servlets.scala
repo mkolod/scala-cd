@@ -28,7 +28,9 @@ class TestServer(war: String, port: Int, context: String) {
 
 }
 
-class ServletTests extends FunSuite with BeforeAndAfterAll {
+class ServletTests extends FunSuite
+                   with BeforeAndAfterAll
+                   with AddServletTests {
 
   val testServer = new TestServer("src/main/webapp", 8080, "/")
 
@@ -42,14 +44,25 @@ class ServletTests extends FunSuite with BeforeAndAfterAll {
     import java.net._
     import scala.io.Source.fromInputStream
 
-    val conn = (new URL(url)).openConnection.asInstanceOf[HttpURLConnection]
+    val host = "http://localhost:8080"
+    val conn = (new URL(host + url)).openConnection.asInstanceOf[HttpURLConnection]
     conn.setRequestMethod("GET")
     fromInputStream(conn.getInputStream).getLines().mkString("\n")
   }
 
-  test("/ title") {
-    val res = get("http://localhost:8080/")
-    assert(res.contains("""<title>continuous deployment for scala</title>"""))
+}
+
+trait AddServletTests { self: ServletTests =>
+
+  test("add a bunch of numbers") {
+    val nums = List(1,2,3,4,5,6,6,7,8)
+    val sum = get("/add?" + nums.mkString(","))
+    assert(sum === "42")
+  }
+
+  test("don't add no numbers") {
+    val sum = get("/add")
+    assert(sum === "")
   }
 
 }
