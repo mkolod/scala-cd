@@ -8,4 +8,5 @@ wget -nc http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css
 wget -nc http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js
 
 sed -i 's/http:\/\/www.w3.org\/Talks\/Tools\/Slidy2\/styles\///g' $OUTPUT_FILE
-sed -i 's/http:\/\/www.w3.org\/Talks\/Tools\/Slidy2\/scripts\/slidy.js(.gz)?/slidy.js/g' $OUTPUT_FILE
+sed -i 's/http:\/\/www.w3.org\/Talks\/Tools\/Slidy2\/scripts\/slidy.js.gz/slidy.js/g' $OUTPUT_FILE
+sed -i 's/http:\/\/www.w3.org\/Talks\/Tools\/Slidy2\/scripts\/slidy.js/slidy.js/g' $OUTPUT_FILE
