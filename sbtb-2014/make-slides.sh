@@ -1,4 +1,4 @@
-OUTPUT_FILE=slides.html
+OUTPUT_FILE=index.html
 
 pandoc -s -f markdown -t slidy -o $OUTPUT_FILE README.md
 sed -i 's/<\/head>/  <style type="text\/css">p.caption { font-style: italic; }<\/style>\n<\/head>/g' $OUTPUT_FILE
