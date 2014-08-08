@@ -1,4 +1,4 @@
-% Scala DevOps:<br />collaborative development and<br />continuous deployment
+% Scala DevOps: <br />collaborative development and <br />continuous deployment
 % James Earl Douglas<br />[&#64;jearldouglas](https://twitter.com/jearldouglas)
 % August 8, 2014<br />[Scala by the Bay](http://www.scalabythebay.org/)
 
