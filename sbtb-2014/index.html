@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <meta name="author" content="James Earl Douglas@jearldouglas" />
+  <title>Scala DevOps:collaborative development andcontinuous deployment</title>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" type="text/css" media="screen, projection, print"
+    href="slidy.css" />
+  <script src="http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js.gz"
+    charset="utf-8" type="text/javascript"></script>
+  <style type="text/css">p.caption { font-style: italic; }</style>
+  <style type="text/css">div.figure { text-align: center; }</style>
+</head>
+<body>
+<div class="slide titlepage">
+  <h1 class="title">Scala DevOps:<br />collaborative development and<br />continuous deployment</h1>
+  <p class="author">
+James Earl Douglas<br /><a href="https://twitter.com/jearldouglas">@jearldouglas</a>
+  </p>
+  <p class="date">August 8, 2014<br /><a href="http://www.scalabythebay.org/">Scala by the Bay</a></p>
+</div>
+<div class="section slide level1" id="a-philosophy-of-devops">
+<h1 id="a-philosophy-of-devops">A philosophy of DevOps</h1>
+<blockquote>
+<p>How long would it take your organization to deploy a change that involves just one single line of code?</p>
+</blockquote>
+<blockquote>
+<p>Do you deploy changes at this pace on a repeatable, reliable basis?</p>
+</blockquote>
+<p><em>- Poppendieck</em></p>
+<div class="figure">
+<img src="philosoraptor.jpg" /><p class="caption"></p>
+</div>
+</div>
+<div class="section slide level1" id="abstract">
+<h1 id="abstract">Abstract</h1>
+<p>In this talk, we look at how a Scala development team can work collaboratively to build, test, and deploy their software.</p>
+</div>
+<div class="section slide level1" id="battle-tested-real-world-certified">
+<h1 id="battle-tested-real-world-certified">Battle-tested, real-world certified</h1>
+<p>This approach has been successful in the development of multiple open source projects.</p>
+<ul>
+<li><a href="https://github.com/earldouglas/xsbt-web-plugin/">xsbt-web-plugin</a> - an sbt plugin for building Scala Web applications</li>
+<li><a href="https://github.com/earldouglas/scalave/">Scalave</a> - embeddable online Scala evaluation</li>
+<li><em>Several others</em></li>
+</ul>
+</div>
+<div class="section slide level1" id="defining-devops">
+<h1 id="defining-devops">Defining DevOps</h1>
+<div class="figure">
+<img src="dr-evil-air-quotes.jpg" alt="&quot;DevOps&quot;" /><p class="caption">&quot;DevOps&quot;</p>
+</div>
+</div>
+<div class="section slide level1" id="defining-devops-so-zen-venn">
+<h1 id="defining-devops-so-zen-venn">Defining DevOps :: so <strike>Zen</strike> Venn</h1>
+<div class="figure">
+<img alt="DevOps Venn diagram" src="devops.svg" width="600" height="570" />
+</div>
+
+</div>
+<div class="section slide level1" id="defining-devops-software-engineering">
+<h1 id="defining-devops-software-engineering">Defining DevOps :: software engineering</h1>
+<pre class="basic"><code>10 GOTO 10</code></pre>
+<p>
+ 
+</p>
+
+<div class="figure">
+<img src="computer-dog.jpg" /><p class="caption"></p>
+</div>
+</div>
+<div class="section slide level1" id="defining-devops-it-operations">
+<h1 id="defining-devops-it-operations">Defining DevOps :: IT operations</h1>
+<p><em>Keep sh*t running.</em></p>
+<p>
+ 
+</p>
+
+<div class="figure">
+<img src="disaster-girl.jpg" /><p class="caption"></p>
+</div>
+</div>
+<div class="section slide level1" id="defining-devops-quality-assurance">
+<h1 id="defining-devops-quality-assurance">Defining DevOps :: quality assurance</h1>
+<p><em>Ensure stakeholder happiness.</em></p>
+<p>
+ 
+</p>
+
+<div class="figure">
+<img src="fail-whale.jpg" /><p class="caption"></p>
+</div>
+</div>
+<div class="section slide level1" id="devops-lifecycle">
+<h1 id="devops-lifecycle">DevOps lifecycle</h1>
+<ul>
+<li>Test-driven development</li>
+<li>Collaborative development</li>
+<li>Continuous integration</li>
+<li>Continuous deployment</li>
+</ul>
+</div>
+<div class="section slide level1" id="test-driven-development">
+<h1 id="test-driven-development">Test-driven development</h1>
+<p>
+ 
+</p>
+
+<div class="figure">
+<img src="fusco.png" /><p class="caption"></p>
+</div>
+</div>
+<div class="section slide level1" id="test-driven-development-phases">
+<h1 id="test-driven-development-phases">Test-driven development :: phases</h1>
+<ul>
+<li>Specification</li>
+<li>Testing</li>
+<li>Implementation</li>
+<li>Coverage</li>
+</ul>
+</div>
+<div class="section slide level1" id="test-driven-development-specification">
+<h1 id="test-driven-development-specification">Test-driven development :: specification</h1>
+<div class="figure">
+<img src="github-new-issue.png" /><p class="caption"></p>
+</div>
+</div>
+<div class="section slide level1" id="test-driven-development-specification-1">
+<h1 id="test-driven-development-specification-1">Test-driven development :: specification</h1>
+<div class="figure">
+<img src="github-comment_test-specification.png" /><p class="caption"></p>
+</div>
+</div>
+<div class="section slide level1" id="test-driven-development-testing">
+<h1 id="test-driven-development-testing">Test-driven development :: testing</h1>
+<p><em>New development; new branch.</em></p>
+<pre><code>$ git checkout -b issue-5</code></pre>
+</div>
+<div class="section slide level1" id="test-driven-development-testing-1">
+<h1 id="test-driven-development-testing-1">Test-driven development :: testing</h1>
+<p><em>Fully specify the desired feature, including how to use it.</em></p>
+<pre class="sourceCode scala"><code class="sourceCode scala"><span class="fu">test</span>(<span class="st">&quot;add a bunch of numbers&quot;</span>) {
+  <span class="kw">val</span> nums = List(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">6</span>,<span class="dv">7</span>,<span class="dv">8</span>)
+  <span class="kw">val</span> sum = <span class="fu">get</span>(<span class="st">&quot;/add?&quot;</span> + nums.<span class="fu">mkString</span>(<span class="st">&quot;,&quot;</span>))
+  <span class="fu">assert</span>(sum === <span class="st">&quot;42&quot;</span>)
+}
+
+<span class="fu">test</span>(<span class="st">&quot;don&#39;t add no numbers&quot;</span>) {
+  <span class="kw">val</span> sum = <span class="fu">get</span>(<span class="st">&quot;/add&quot;</span>)
+  <span class="fu">assert</span>(sum === <span class="st">&quot;&quot;</span>)
+}</code></pre>
+</div>
+<div class="section slide level1" id="test-driven-development-failing-test">
+<h1 id="test-driven-development-failing-test">Test-driven development :: failing test</h1>
+<p><em>Make something break before fixing it.</em></p>
+<pre><code>$ sbt test
+...
+[info] - add a bunch of numbers *** FAILED ***
+[info] - don&#39;t add no numbers *** FAILED ***
+...
+[error] Failed: Total 2, Failed 2, Errors 0, Passed 0</code></pre>
+</div>
+<div class="section slide level1" id="test-driven-development-implementation">
+<h1 id="test-driven-development-implementation">Test-driven development :: implementation</h1>
+<p>We'll use a Servlet with sbt and xsbt-web-plugin.</p>
+</div>
+<div class="section slide level1" id="test-driven-development-implementation-1">
+<h1 id="test-driven-development-implementation-1">Test-driven development :: implementation</h1>
+<p><em>Let's make the test pass.</em></p>
+<pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">class</span> AddServlet <span class="kw">extends</span> HttpServlet {
+  <span class="kw">override</span> <span class="kw">def</span> <span class="fu">doGet</span>(req: HttpServletRequest, res: HttpServletResponse) {
+    Option(req.<span class="fu">getQueryString</span>) foreach { q =&gt;
+      <span class="kw">val</span> nums = q.<span class="fu">split</span>(<span class="st">&quot;,&quot;</span>) map { _.<span class="fu">toInt</span> }
+      res.<span class="fu">getWriter</span>.<span class="fu">write</span>(nums.<span class="fu">sum</span>.<span class="fu">toString</span>)
+    }
+  }
+}</code></pre>
+</div>
+<div class="section slide level1" id="test-driven-development-passing-test">
+<h1 id="test-driven-development-passing-test">Test-driven development :: passing test</h1>
+<p><em>Bingo.</em></p>
+<pre><code>$ sbt test
+...
+[info] - add a bunch of numbers
+[info] - don&#39;t add no numbers
+...
+[info] Passed: Total 2, Failed 0, Errors 0, Passed 2</code></pre>
+</div>
+<div class="section slide level1" id="test-driven-development-coverage">
+<h1 id="test-driven-development-coverage">Test-driven development :: coverage</h1>
+<p><em>It's not pretty (yet), but we'll get there.</em></p>
+<pre><code>$ sbt scoverage:test
+...
+[info] - add a bunch of numbers
+...
+outputDir:/home/james/code/scala-cd/target/scala-2.10/scoverage-report
+...
+[info] Passed: Total 1, Failed 0, Errors 0, Passed 1</code></pre>
+</div>
+<div class="section slide level1" id="test-driven-development-coverage-1">
+<h1 id="test-driven-development-coverage-1">Test-driven development :: coverage</h1>
+<p><em>Here's a sneak preview.</em></p>
+<div class="figure">
+<img src="coverage.png" /><p class="caption"></p>
+</div>
+</div>
+<div class="section slide level1" id="collaborative-development">
+<h1 id="collaborative-development">Collaborative development</h1>
+<p>The code is ready for peer review.</p>
+</div>
+<div class="section slide level1" id="collaborative-development-submit-it">
+<h1 id="collaborative-development-submit-it">Collaborative development :: submit it</h1>
+<p><em>Push the new branch.</em></p>
+<pre><code>$ git push origin issue-5</code></pre>
+<p><em>Open a new pull request.</em></p>
+<div class="figure">
+<img src="github-pr.png" /><p class="caption"></p>
+</div>
+</div>
+<div class="section slide level1" id="collaborative-development-code-review">
+<h1 id="collaborative-development-code-review">Collaborative development :: code review</h1>
+<p><em>The tests</em></p>
+<div class="figure">
+<img src="github-pr_test-review.png" /><p class="caption"></p>
+</div>
+<p><em>The implementation</em></p>
+<div class="figure">
+<img src="github-pr_code-review.png" /><p class="caption"></p>
+</div>
+</div>
+<div class="section slide level1" id="continuous-integration">
+<h1 id="continuous-integration">Continuous integration</h1>
+<p>We need to side-step into CI before we can wrap up our collaborative development process.</p>
+</div>
+<div class="section slide level1" id="continuous-integration-1">
+<h1 id="continuous-integration-1">Continuous integration</h1>
+<blockquote>
+<p>Asking experts to do boring and repetitive, and yet technically demanding tasks is the most certain way of ensuring human error that we can think of, short of sleep deprivation, or inebriation.</p>
+</blockquote>
+<p><em>- Humble, Farley</em></p>
+</div>
+<div class="section slide level1" id="continuous-integration-github">
+<h1 id="continuous-integration-github">Continuous integration :: github</h1>
+<div class="figure">
+<img src="github.png" /><p class="caption"></p>
+</div>
+</div>
+<div class="section slide level1" id="continuous-integration-travis-ci">
+<h1 id="continuous-integration-travis-ci">Continuous integration :: travis ci</h1>
+<div class="figure">
+<img src="travis-ci.png" /><p class="caption"></p>
+</div>
+</div>
+<div class="section slide level1" id="continuous-integration-coveralls">
+<h1 id="continuous-integration-coveralls">Continuous integration :: coveralls</h1>
+<div class="figure">
+<img src="coveralls.png" /><p class="caption"></p>
+</div>
+</div>
+<div class="section slide level1" id="collaborative-development-check-the-ci-status">
+<h1 id="collaborative-development-check-the-ci-status">Collaborative development :: check the CI status</h1>
+<p><em>Does the build pass?</em></p>
+<div class="figure">
+<img src="github-pr_build-success.png" /><p class="caption"></p>
+</div>
+</div>
+<div class="section slide level1" id="collaborative-development-acceptance">
+<h1 id="collaborative-development-acceptance">Collaborative development :: acceptance</h1>
+<p><em>Merge that PR!</em></p>
+<div class="figure">
+<img src="github-pr_merged.png" /><p class="caption"></p>
+</div>
+</div>
+<div class="section slide level1" id="continuous-integration-2">
+<h1 id="continuous-integration-2">Continuous integration</h1>
+<p><em>Who's driving this thing!?</em></p>
+<pre><code>developer --&gt; GitHub --&gt; Travis CI ----&gt; GitHub
+                                   \
+                                    `--&gt; Coveralls</code></pre>
+</div>
+<div class="section slide level1" id="continuous-deployment">
+<h1 id="continuous-deployment">Continuous deployment</h1>
+<p><em>continuous deployment ≈ continuous integration + some kind of publishing</em></p>
+</div>
+<div class="section slide level1" id="continuous-deployment-bintray">
+<h1 id="continuous-deployment-bintray">Continuous deployment :: bintray</h1>
+<div class="figure">
+<img src="bintray.png" /><p class="caption"></p>
+</div>
+</div>
+<div class="section slide level1" id="continuous-deployment-heroku">
+<h1 id="continuous-deployment-heroku">Continuous deployment :: heroku</h1>
+<div class="figure">
+<img src="heroku.png" /><p class="caption"></p>
+</div>
+</div>
+<div class="section slide level1" id="continuous-deployment-on-the-shoulders-of-ci">
+<h1 id="continuous-deployment-on-the-shoulders-of-ci">Continuous deployment :: on the shoulders of CI</h1>
+<pre><code>developer --&gt; GitHub --&gt; Travis CI ----&gt; GitHub
+                             \  \  \
+                              \  \  `--&gt; Coveralls
+                               \  \
+                                \  `---&gt; Bintray
+                                 \
+                                  `----&gt; Heroku</code></pre>
+</div>
+<div class="section slide level1" id="continuous-deployment-acceptance-testing">
+<h1 id="continuous-deployment-acceptance-testing">Continuous deployment :: acceptance testing</h1>
+<p><em>Verify the feature.</em></p>
+<pre><code>$ curl scala-cd.herokuapp.com/add?1,2,3,4,5,6,6,7,8
+42</code></pre>
+</div>
+<div class="section slide level1" id="continuous-deployment-qa">
+<h1 id="continuous-deployment-qa">Continuous deployment :: QA</h1>
+<p><em>Check for reasonable failures.</em></p>
+<pre><code>$ curl -i scala-cd.herokuapp.com/add?one,two
+HTTP/1.1 500 Internal Server Error</code></pre>
+<p><em>Test for acceptable performance.</em></p>
+<pre><code>$ ab -n 500 -c 50 scala-cd.herokuapp.com/add?1,2,3,4,5,6,6,7,8
+...
+Concurrency Level:      50
+Time taken for tests:   2.956 seconds
+Complete requests:      500
+Failed requests:        0
+Total transferred:      69500 bytes
+Requests per second:    169.14 [#/sec] (mean)
+Time per request:       295.616 [ms] (mean)</code></pre>
+</div>
+<div class="section slide level1" id="review">
+<h1 id="review">Review</h1>
+<ul>
+<li>Defining DevOps</li>
+<li>Test-driven development</li>
+<li>Collaborative development</li>
+<li>Continuous integration</li>
+<li>Continuous deployment</li>
+</ul>
+</div>
+<div class="section slide level1" id="conclusion">
+<h1 id="conclusion">Conclusion</h1>
+<blockquote>
+<p>How long would it take your organization to deploy a change that involves just one single line of code?</p>
+</blockquote>
+<p><strong>Minutes.</strong></p>
+<blockquote>
+<p>Do you deploy changes at this pace on a repeatable, reliable basis?</p>
+</blockquote>
+<p><strong>Yes.</strong></p>
+</div>
+<div class="section slide level1" id="conclusion-1">
+<h1 id="conclusion-1">Conclusion</h1>
+<p><em>How?</em></p>
+<ul>
+<li>Automate all the things</li>
+<li>Build constantly</li>
+<li>Deploy constantly</li>
+</ul>
+</div>
+<div class="section slide level1" id="stuff-we-didnt-cover">
+<h1 id="stuff-we-didnt-cover">Stuff we didn't cover</h1>
+<ul>
+<li>Automated scaling</li>
+<li>Zero downtime</li>
+<li>A/B testing</li>
+<li>Non-public builds</li>
+<li>Detailed tools configuration</li>
+</ul>
+</div>
+<div class="section slide level1" id="references">
+<h1 id="references">References</h1>
+<p><strong>Books</strong></p>
+<ul>
+<li>Continuous Delivery, by Jez Humble and David Farley</li>
+<li>Implementing Lean Software Development: From Concept to Cash, by Mary Poppendieck and Tom Poppendieck</li>
+</ul>
+<p><strong>Tutorials</strong></p>
+<ul>
+<li><a href="https://github.com/earldouglas/scala-cd#continuous-deployment-for-scala">Continuous deployment for Scala (github.com/earldouglas/scala-cd)</a></li>
+<li><a href="https://github.com/earldouglas/scala-ci#continuous-integration-for-scala">Continuous integration for Scala (github.com/earldouglas/scala-ci)</a></li>
+</ul>
+</div>
+<div class="section slide level1" id="questions">
+<h1 id="questions">Questions</h1>
+<p><a href="https://twitter.com/jearldouglas">@jearldouglas</a></p>
+</div>
+</body>
+</html>
