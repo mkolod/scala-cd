@@ -2,6 +2,12 @@
 % James Earl Douglas<br />[&#64;jearldouglas](https://twitter.com/jearldouglas)
 % August 8, 2014<br />[Scala by the Bay](http://www.scalabythebay.org/)
 
+# Abstract
+
+In this talk, we look at how a Scala development team can work collaboratively to build, test, and deploy their software.
+
+*[github.com/earldouglas/scala-cd](https://github.com/earldouglas/scala-cd#continuous-deployment-for-scala)*
+
 # A philosophy of DevOps
 
 > How long would it take your organization to deploy a change that involves just one single line of code?
@@ -11,10 +17,6 @@
 *- Poppendieck*
 
 ![](philosoraptor.jpg)
-
-# Abstract
-
-In this talk, we look at how a Scala development team can work collaboratively to build, test, and deploy their software.
 
 # Battle-tested, real-world certified
 
