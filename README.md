@@ -35,21 +35,8 @@ Follow steps outlined in [continuous integration for scala](https://github.com/e
 
 ## Automate deployment to Heroku
 
-When sbt packages a Web project, it creates a package file that includes is a
-little hard to predict, since it includes both the project version and the Scala
-version in its file name.  To make things easier, we delegate to sbt to get the 
-location of the *.war* package, and invoke a deployment script for it.
-
-*build.sbt:*
-
-```scala
-val deploy = taskKey[Unit]("Deploy the packaged .war file via heroku")
-
-deploy := {
-  val (_, warFile) = (packagedArtifact in (Compile, packageWar)).value
-  ("bash deploy.sh " + warFile.getPath) !
-}
-```
+Heroku supports deploymnet of *.war* files to Heroku using the Heroku Toolbelt 
+and its *heroku-deploy* plugin.  Let's wrap this up in a reusable script.
 
 *deploy.sh:*
 
@@ -78,6 +65,23 @@ else
 fi
 ```
 
+This script deploys a *.war* file to Heroku if and only if the current branch 
+is *master*.
+
+We'll need a way to call this script from sbt, which knows when and where the 
+*.war* package gets created.
+
+*build.sbt:*
+
+```scala
+val deploy = taskKey[Unit]("Deploy the packaged .war file via heroku")
+
+deploy := {
+  val (_, warFile) = (packagedArtifact in (Compile, packageWar)).value
+  ("bash deploy.sh " + warFile.getPath) !
+}
+```
+
 Next, we need to provide Travis CI with our Heroku deployment credentials, so let's
 encrypt them and add them to *.travis.yml*.  See the related
 [Travis CI docs](http://docs.travis-ci.com/user/deployment/heroku/)
@@ -97,8 +101,8 @@ env:
     secure: [a long, ecnrypted string]
 ```
 
-Finally, we configure Travis CI to deploy successful builds of the *master*
-branch to Heroku.  Remove the old `script` line from *.travis.yml*, and replace
+Finally, we configure Travis CI to run the deployment task for successful 
+builds.  Remove the old `script` line from *.travis.yml*, and replace
 it with the following.
 
 *.travis.yml:*
