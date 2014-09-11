@@ -13,7 +13,7 @@ if [ "$TRAVIS_BRANCH" == "master" ]; then
 
   wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
   heroku plugins:install https://github.com/heroku/heroku-deploy
-  heroku deploy:war --war $WAR --app xwp-template
+  heroku deploy:war --war $WAR --app scala-cd
 
 else
 
