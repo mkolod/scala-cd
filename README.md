@@ -37,25 +37,46 @@ Follow steps outlined in [continuous integration for scala](https://github.com/e
 
 When sbt packages a Web project, it creates a package file that includes is a
 little hard to predict, since it includes both the project version and the Scala
-version in its file name.  To make things easier, we want a predictable path to
-the *.war* package, which we'll create with a simple sbt task.
+version in its file name.  To make things easier, we delegate to sbt to get the 
+location of the *.war* package, and invoke a deployment script for it.
 
 *build.sbt:*
 
 ```scala
-val linkWar = taskKey[Unit]("Symlink the packaged .war file")
-        
-linkWar := {
-  val (art, pkg) = packagedArtifact.in(Compile, packageWar).value
-  import java.nio.file.Files
-  val link = (target.value / (art.name + "." + art.extension))
-  link.delete
-  Files.createSymbolicLink(link.toPath, pkg.toPath)
+val deploy = taskKey[Unit]("Deploy the packaged .war file via heroku")
+
+deploy := {
+  val (_, warFile) = (packagedArtifact in (Compile, packageWar)).value
+  ("bash deploy.sh " + warFile.getPath) !
 }
 ```
 
-This creates a symbolic link *target/scala-cd.war* to the sbt-generated
-artifact *target/scala-2.10/scala-cd_2.10-0.1.0-SNAPSHOT.war*.
+*deploy.sh:*
+
+```bash
+#!/bin/bash
+
+if [ "$#" -ne 1 ]; then
+  echo "Usage: $0 <.war file>"
+  exit 1
+fi
+
+if [ "$TRAVIS_BRANCH" == "master" ]; then
+
+  echo "Deploying $TRAVIS_BRANCH branch..."
+
+  WAR=$1
+
+  wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
+  heroku plugins:install https://github.com/heroku/heroku-deploy
+  heroku deploy:war --war $WAR --app xwp-template
+
+else
+
+  echo "Not deploying $TRAVIS_BRANCH branch"
+
+fi
+```
 
 Next, we need to provide Travis CI with our Heroku deployment credentials, so let's
 encrypt them and add them to *.travis.yml*.  See the related
@@ -83,16 +104,11 @@ it with the following.
 *.travis.yml:*
 
 ```yaml
-script: sbt coveralls package linkWar
-after_success:
-- if [[ "$TRAVIS_BRANCH" == "master" ]]; then
-    wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh ;
-    heroku plugins:install https://github.com/heroku/heroku-deploy ;
-    heroku deploy:war --war target/scala-cd.war --app scala-cd ;
-  fi
+script: sbt coveralls package
+after_success: sbt deploy
 ```
 
 Now when we push changs to GitHub, Travis CI picks them up, and
 [runs a build](https://travis-ci.org/earldouglas/scala-cd/builds) via
-`sbt coveralls package linkWar`.  If the changes were pushed to the master
+`sbt coveralls package`.  If the changes were pushed to the master
 branch, Travis CI pushes the packaged *.war* file [to Heroku](http://scala-cd.herokuapp.com/).
