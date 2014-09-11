@@ -57,12 +57,12 @@ trait AddServletTests { self: ServletTests =>
 
   test("add a bunch of numbers") {
     val nums = List(1,2,3,4,5,6,6,7,8)
-    val sum = get("/add?" + nums.mkString(","))
+    val sum = get("/sum?" + nums.mkString(","))
     assert(sum === "42")
   }
 
   test("don't add no numbers") {
-    val sum = get("/add")
+    val sum = get("/sum")
     assert(sum === "")
   }
 
@@ -75,7 +75,7 @@ trait DefaultPageTests { self: ServletTests =>
     assert(res.contains("""<h1>scala-cd</h1>"""))
   }
 
-  test("see link to /add service") {
+  test("see link to /sum service") {
     val res = get("/")
     val xml = scala.xml.XML.loadString(res)
     val hrefs =
@@ -83,7 +83,7 @@ trait DefaultPageTests { self: ServletTests =>
         a    <- xml \\ "a"
         href <- a attribute "href"
       } yield href.text
-    assert(hrefs contains "/add?1,2,3,4,5,6,6,7,8")
+    assert(hrefs contains "/sum?1,2,3,4,5,6,6,7,8")
   }
 
 }
